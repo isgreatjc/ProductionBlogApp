@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Accueil - Mon Super Blog{% endblock %}
+{% block content %}
+<h1>Bienvenue sur Mon Super Blog !</h1>
+{% if user.is_authenticated %}
+<p>Vous êtes connecté en tant que {{ user.username }}. <a href="{% url 'blogapp:creer_article' %}">Écrire un nouvel article ?</a></p>
+{% else %}
+<p>Vous pouvez vous <a href="{% url 'blogapp:connexion' %}">connecter</a> pour écrire des articles ou vous <a href="{% url 'blogapp:inscription' %}">inscrire</a>.</p>
+{% endif %}
+<h2>Nos derniers articles :</h2>
+{% if articles_a_afficher %} {# On utilise la nouvelle variable passée par la vue #}
+<ul class="article-list">
+    {% for article_item in articles_a_afficher %} {# On boucle sur les articles de la page actuelle #}
+    <li>
+        <h3><a href="{% url 'blogapp:detail_article' article_id=article_item.pk %}">{{ article_item.titre }}</a></h3>
+        <p class="article-meta">
+            Par : <a href="{% url 'blogapp:profil_utilisateur' username=article_item.auteur.username %}">{{ article_item.auteur.username }}</a> | Publié le : {{ article_item.date_creation|date:"d M Y, H:i" }}
+        </p>
+        <p>{{ article_item.contenu|truncatewords:30 }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{# Section pour la navigation de la pagination #}
+<div class="pagination">
+    <p style="margin-bottom: 10px;"><strong>Navigation :</strong></p>
+    <span class="step-links">
+        {% if articles_a_afficher.has_previous %} {# Vérifie s'il y a une page précédente #}
+        <a href="?page=1" class="button-link">&laquo; Première</a>
+        <a href="?page={{ articles_a_afficher.previous_page_number }}" class="button-link">Précédente</a>
+        {% else %}
+        <span class="disabled-link">&laquo; Première</span>
+        <span class="disabled-link">Précédente</span>
+        {% endif %}
+        {% if articles_a_afficher.has_next %} {# Vérifie s'il y a une page suivante #}
+        <a href="?page={{ articles_a_afficher.next_page_number }}" class="button-link">Suivante</a>
+        <a href="?page={{ articles_a_afficher.paginator.num_pages }}" class="button-link">Dernière &raquo;</a>
+        {% else %}
+        <span class="disabled-link">Suivante</span>
+        <span class="disabled-link">Dernière &raquo;</span>
+        {% endif %}
+    </span>
+</div>
+<div style="text-align: center; margin-top: 15px;">
+    <span class="current-page">
+        <strong>Page {{ articles_a_afficher.number }} sur {{ articles_a_afficher.paginator.num_pages }}</strong>
+    </span>
+</div>
+{% else %}
+<p>Il n'y a pas encore d'articles sur ce blog. Soyez le premier à en écrire un !</p>
+{% endif %}
+{% endblock %}

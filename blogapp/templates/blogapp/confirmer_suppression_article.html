@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Confirmer la Suppression - Mon Super Blog{% endblock %}
+{% block content %}
+<h2>Confirmer la Suppression</h2>
+<p>Êtes-vous sûr de vouloir supprimer l'article : "<strong>{{ article.titre }}</strong>" ?</p>
+<p>Cette action est irréversible.</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Oui, supprimer</button>
+    <a href="{% url 'blogapp:detail_article' article_id=article.pk %}">Non, annuler</a>
+</form>
+{% endblock %}.

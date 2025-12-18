@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} un Article - Mon Super Blog{% endblock %}
+{% block content %}
+<h2>{{ action }} un Article</h2>
+{% if action == "Modifier" and article %}
+<p>Vous modifiez l'article : "{{ article.titre }}"</p>
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{{ action }}</button>
+</form>
+<br>
+<a href="{% if article %}{% url 'blogapp:detail_article' article_id=article.pk %}{% else %}{% url 'blogapp:accueil' %}{% endif %}">Annuler</a>
+{% endblock %}

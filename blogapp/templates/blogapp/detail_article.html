@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ article.titre }} - Mon Super Blog{% endblock %}
+{% block content %}
+<article>
+    <h2>{{ article.titre }}</h2>
+    <p><em>Par <a href="{% url 'blogapp:profil_utilisateur' username=article.auteur.username %}">{{ article.auteur.username }}</a> le {{ article.date_creation|date:"d F Y à H:i" }}</em></p>
+    {% if article.date_creation != article.date_mise_a_jour %}
+    <p><small>Dernière modification le {{ article.date_mise_a_jour|date:"d F Y à H:i" }}</small></p>
+    {% endif %}
+    <hr>
+    <div>
+        {{ article.contenu|linebreaksbr }}
+    </div>
+    <hr>
+    {% if user.is_authenticated and user == article.auteur %}
+    <a href="{% url 'blogapp:modifier_article' article_id=article.pk %}">Modifier cet article</a> |
+    <a href="{% url 'blogapp:supprimer_article' article_id=article.pk %}">Supprimer cet article</a>
+    {% endif %}
+    <br><br>
+    <a href="{% url 'blogapp:accueil' %}">Retour à la liste des articles</a>
+</article>
+<hr style="margin-top: 30px; margin-bottom: 30px;">
+{# Section pour les commentaires #}
+<section id="commentaires">
+    <h3>Commentaires ({{ article.commentaires.count }})</h3>
+    
+    {% if user.is_authenticated %}
+        {% if user != article.auteur %}
+            <h4>Laissez un commentaire :</h4>
+            <form method="post" action="{% url 'blogapp:ajouter_commentaire' article_id=article.pk %}">
+                {% csrf_token %}
+                {{ commentaire_form.as_p }}
+                <button type="submit">Envoyer le commentaire</button>
+            </form>
+            <br>
+        {% else %}
+            <p><small><em>Vous ne pouvez pas commenter votre propre article.</em></small></p>
+        {% endif %}
+    {% else %}
+        <p><a href="{% url 'blogapp:connexion' %}?next={{ request.path }}">Connectez-vous</a> pour laisser un commentaire.</p>
+    {% endif %}
+    
+    {% if article.commentaires.all %}
+        {% for commentaire in article.commentaires.all %}
+            <div class="commentaire-item">
+                <p>
+                    <strong><a href="{% url 'blogapp:profil_utilisateur' username=commentaire.auteur.username %}">{{ commentaire.auteur.username }}</a></strong> {# <--- LIEN AJOUTÉ #}
+                    <small>({{ commentaire.date_creation|date:"d M Y, H:i" }})</small> a dit :
+                </p>
+                <p>{{ commentaire.contenu|linebreaksbr }}</p>
+            </div>
+        {% empty %}
+        {% endfor %}
+    {% else %}
+        <p>Soyez le premier à commenter cet article !</p>
+    {% endif %}
+</section>
+{% endblock %}

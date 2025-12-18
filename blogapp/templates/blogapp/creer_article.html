@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Nouvel article - Mon Super Blog{% endblock %}
+
+{% block content %}
+  <h1>Nouvel article</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label for="titre">Titre</label><br>
+    <input id="titre" name="titre" type="text" required style="width:100%"><br><br>
+
+    <label for="contenu">Contenu</label><br>
+    <textarea id="contenu" name="contenu" rows="12" style="width:100%" required></textarea><br><br>
+
+    <button type="submit">Publier</button>
+    <a href="{% url 'blogapp:accueil' %}">Annuler</a>
+  </form>
+{% endblock %}

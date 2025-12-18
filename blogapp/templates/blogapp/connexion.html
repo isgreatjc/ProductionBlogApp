@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Connexion - Mon Super Blog{% endblock %}
+{% block content %}
+<h2>Connexion</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Se connecter</button>
+</form>
+<p>Pas encore de compte ? <a href="{% url 'blogapp:inscription' %}">Inscrivez-vous ici</a>.</p>
+{% endblock %}
